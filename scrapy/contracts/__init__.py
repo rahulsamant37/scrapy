@@ -49,12 +49,13 @@ class Contract:
                 except Exception:
                     results.addError(self.testcase_pre, sys.exc_info())
                     raise
-                else:
-                    results.addSuccess(self.testcase_pre)
-                    cb_result = cb(response, **cb_kwargs)
-                    if isinstance(cb_result, (AsyncGenerator, CoroutineType)):
-                        raise TypeError("Contracts don't support async callbacks")
-                    return list(cast(Iterable[Any], iterate_spider_output(cb_result)))
+                finally:
+                    results.stopTest(self.testcase_pre)
+                results.addSuccess(self.testcase_pre)
+                cb_result = cb(response, **cb_kwargs)
+                if isinstance(cb_result, (AsyncGenerator, CoroutineType)):
+                    raise TypeError("Contracts don't support async callbacks")
+                return list(cast(Iterable[Any], iterate_spider_output(cb_result)))
 
             request.callback = wrapper
 
@@ -81,9 +82,10 @@ class Contract:
                 except Exception:
                     results.addError(self.testcase_post, sys.exc_info())
                     raise
-                else:
-                    results.addSuccess(self.testcase_post)
-                    return output
+                finally:
+                    results.stopTest(self.testcase_post)
+                results.addSuccess(self.testcase_post)
+                return output
 
             request.callback = wrapper
 
