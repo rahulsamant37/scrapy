@@ -45,17 +45,16 @@ class Contract:
                     results.stopTest(self.testcase_pre)
                 except AssertionError:
                     results.addFailure(self.testcase_pre, sys.exc_info())
+                    raise
                 except Exception:
                     results.addError(self.testcase_pre, sys.exc_info())
+                    raise
                 else:
                     results.addSuccess(self.testcase_pre)
-                finally:
                     cb_result = cb(response, **cb_kwargs)
                     if isinstance(cb_result, (AsyncGenerator, CoroutineType)):
                         raise TypeError("Contracts don't support async callbacks")
-                    return list(  # pylint: disable=return-in-finally
-                        cast(Iterable[Any], iterate_spider_output(cb_result))
-                    )
+                    return list(cast(Iterable[Any], iterate_spider_output(cb_result)))
 
             request.callback = wrapper
 
@@ -82,8 +81,7 @@ class Contract:
                     results.addError(self.testcase_post, sys.exc_info())
                 else:
                     results.addSuccess(self.testcase_post)
-                finally:
-                    return output  # pylint: disable=return-in-finally
+                    return output
 
             request.callback = wrapper
 
