@@ -77,8 +77,10 @@ class Contract:
                     results.stopTest(self.testcase_post)
                 except AssertionError:
                     results.addFailure(self.testcase_post, sys.exc_info())
+                    raise
                 except Exception:
                     results.addError(self.testcase_post, sys.exc_info())
+                    raise
                 else:
                     results.addSuccess(self.testcase_post)
                     return output
